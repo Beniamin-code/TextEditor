@@ -1,91 +1,70 @@
-#include <iostream>
-#include <Windows.h>
-#include <d2d1.h>
-#include <dwmapi.h>
+#include "Window.hpp"
 
-ID2D1Factory* factory;
-ID2D1HwndRenderTarget* rt;
-ID2D1SolidColorBrush* brush;
-
-// undo, redo
-// syntax highlghting
-// zoom
-// search, replace
-// copy/paste
-// linie, coloana
-
-LRESULT WndProc(HWND h, UINT m, WPARAM w, LPARAM l) {
-	if (m == WM_PAINT) {
-		PAINTSTRUCT ps;
-		BeginPaint(h, &ps);
-
-		rt->BeginDraw();
-		rt->Clear(D2D1::ColorF(D2D1::ColorF::Black));
-
-		D2D1_RECT_F r{ 50,50,150,150 };
-		rt->FillRectangle(&r, brush);
-
-		rt->EndDraw();
-		EndPaint(h, &ps);
-		return 0;
+struct TextEditorWindow : Window {
+	TextEditorWindow() : Window(
+		L"Text Editor",
+		WindowSettings()
+			.Background(0x181818)
+			.MinSize(400, 300)
+			.Size(640, 480)
+	) {
+		m_Font = new Font(L"Segoe UI", 18, 600);
 	}
 
-	if (m == WM_SIZE) {
-		if (rt) {
-			UINT w = LOWORD(l);
-			UINT h = HIWORD(l);
-			rt->Resize(D2D1_SIZE_U{ w, h });
-			float r = (float)w / h;
-			brush->SetColor(D2D1::ColorF(r, 1 / r, 0, 1));
-		}
-		InvalidateRect(h, nullptr, FALSE);
-		return DefWindowProc(h, m, w, l);
+	~TextEditorWindow() {
+		delete m_Font;
 	}
 
-	if (m == WM_CLOSE) {
-		PostQuitMessage(0);
-		return 0;
+	void Handle(const ResizeEvent &e) override {
+		m_Width = (float) e.Width;
+		m_Height = (float) e.Height;
 	}
 
-	return DefWindowProc(h, m, w, l);
-}
+	void Handle(const PaintEvent &e) override {
+		e.Painter.SetColor(0x202020);
+		e.Painter.FillRect(10, 34, m_Width - 20, m_Height - 44, 8);
+
+		wchar_t text[16] = L"You pressed ' '";
+		text[13] = m_Char;
+
+		e.Painter.SetColor(0xE0E0E0);
+		e.Painter.PutText(*m_Font, text, 20, 44);
+
+		e.Painter.SetColor(0xFF9900);
+		e.Painter.FillRect(m_X - 10, m_Y - 10, 10, 10);
+	}
+
+	void Handle(const KeyInputEvent &e) override {
+		if(!e.IsDown) return;
+		if(e.Char < 0x20 || e.Char >= 0x80)
+			return;
+
+		m_Char = e.Char;
+		Redraw();
+	}
+
+	void Handle(const MouseMoveEvent &e) override {
+		m_X = (float) e.X;
+		m_Y = (float) e.Y;
+		Redraw();
+	}
+
+private:
+	float m_Width, m_Height;
+	float m_X, m_Y;
+	wchar_t m_Char = ' ';
+
+	Font *m_Font;
+};
 
 int main() {
-	WNDCLASSW wc = { };
-	wc.lpfnWndProc = WndProc;
-	wc.hInstance = GetModuleHandleW(0);
-	wc.lpszClassName = L"TextEditor";
-	RegisterClassW(&wc);
+	try {
+		TextEditorWindow window;
 
-	HWND hwnd = CreateWindowExW(0, wc.lpszClassName, L"Text Editor", WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 640, 480, 0, 0, wc.hInstance, 0);
+		while(window.IsOpen())
+			Window::HandleEvents();
 
-	BOOL dark = TRUE;
-	DwmSetWindowAttribute(
-		hwnd,
-		DWMWA_USE_IMMERSIVE_DARK_MODE,
-		&dark,
-		sizeof(dark)
-	);
-
-	D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, &factory);
-
-	RECT rc;
-	GetClientRect(hwnd, &rc);
-
-	factory->CreateHwndRenderTarget(
-		D2D1::RenderTargetProperties(),
-		D2D1::HwndRenderTargetProperties(
-			hwnd, D2D1::SizeU(rc.right, rc.bottom)),
-		&rt
-	);
-
-	rt->CreateSolidColorBrush(D2D1::ColorF(D2D1::ColorF::Blue), &brush);
-
-	ShowWindow(hwnd, SW_SHOW);
-	
-	MSG msg;
-	while (GetMessageW(&msg, 0, 0, 0)) {
-		TranslateMessage(&msg);
-		DispatchMessageW(&msg);
+	} catch(const wchar_t *message) {
+		Window::OpenDialog(L"Error", message, DialogType::Error);
 	}
 }
