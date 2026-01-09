@@ -142,13 +142,17 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Clipboard.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Painter.cpp" />
+    <ClCompile Include="PieceTable.cpp" />
     <ClCompile Include="Widget.cpp" />
     <ClCompile Include="Window.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Clipboard.hpp" />
     <ClInclude Include="Painter.hpp" />
+    <ClInclude Include="PieceTable.hpp" />
     <ClInclude Include="Widget.hpp" />
     <ClInclude Include="Window.hpp" />
   </ItemGroup>
