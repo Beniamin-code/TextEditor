@@ -2,24 +2,6 @@
 
 #include "Painter.hpp"
 
-//m_Root = &Make<Column>()
-//	.Add(
-//		Make<SizeBox>(
-//			Make<Row>()
-//				.Add(
-//					Make<Button>(L"Files")
-//				).Add(
-//					Make<Button>(L"Edit")
-//				).Gap(4)
-//		).Height(48)
-//	).Add(
-//		Make<Expand>(
-//			Make<TextBox>()
-//		)
-//	);
-
-//m_Root = &Make<Button>(L"Click me!");
-
 struct Constraint {
 	unsigned MinWidth = 0, MinHeight = 0;
 	unsigned MaxWidth = -1, MaxHeight = -1;
@@ -28,10 +10,6 @@ struct Constraint {
 	Constraint &Preferred(int x, int y);
 	Constraint &Min(int x, int y);
 	Constraint &Max(int x, int y);
-};
-
-struct Context {
-
 };
 
 struct Widget {

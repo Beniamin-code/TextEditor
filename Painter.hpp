@@ -23,6 +23,7 @@ struct Painter {
 	void Begin() const;
 	void End() const;
 
+	void SetDpi(int dpi);
 	void Resize(int width, int height) const;
 	void Clear(int color) const;
 

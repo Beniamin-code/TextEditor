@@ -1,14 +1,29 @@
-#include "Window.hpp"
+﻿#include "Window.hpp"
 
 struct TextEditorWindow : Window {
-	TextEditorWindow() : Window(
+	TextEditorWindow(WindowSettings windowSettings) : Window(
 		L"Text Editor",
-		WindowSettings()
+		windowSettings
 			.Background(0x181818)
-			.MinSize(400, 300)
 			.Size(640, 480)
 	) {
 		m_Font = new Font(L"Segoe UI", 18, 600);
+
+		//m_Root = &Make<Column>()
+		//	.Add(
+		//		Make<SizeBox>(
+		//			Make<Row>()
+		//				.Add(
+		//					Make<Button>(L"Files")
+		//				).Add(
+		//					Make<Button>(L"Edit")
+		//				).Gap(4)
+		//		).Height(48)
+		//	).Add(
+		//		Make<Expand>(
+		//			Make<TextBox>()
+		//		)
+		//	);
 	}
 
 	~TextEditorWindow() {
@@ -24,7 +39,7 @@ struct TextEditorWindow : Window {
 		e.Painter.SetColor(0x202020);
 		e.Painter.FillRect(10, 34, m_Width - 20, m_Height - 44, 8);
 
-		wchar_t text[16] = L"You pressed ' '";
+		wchar_t text[] = L"You pressed ' ' 🐒";
 		text[13] = m_Char;
 
 		e.Painter.SetColor(0xE0E0E0);
@@ -50,16 +65,17 @@ struct TextEditorWindow : Window {
 	}
 
 private:
-	float m_Width, m_Height;
-	float m_X, m_Y;
+	float m_Width = 0, m_Height = 0;
+	float m_X = 0, m_Y = 0;
 	wchar_t m_Char = ' ';
 
-	Font *m_Font;
+	Font *m_Font = 0;
 };
 
 int main() {
 	try {
-		TextEditorWindow window;
+		WindowSettings windowSettings;
+		TextEditorWindow window(windowSettings);
 
 		while(window.IsOpen())
 			Window::HandleEvents();

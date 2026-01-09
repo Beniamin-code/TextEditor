@@ -63,6 +63,10 @@ void Painter::End() const {
 	m_RenderTarget->EndDraw();
 }
 
+void Painter::SetDpi(int dpi) {
+	m_RenderTarget->SetDpi((float) dpi, (float) dpi);
+}
+
 void Painter::Resize(int width, int height) const {
 	m_RenderTarget->Resize(D2D1_SIZE_U { (unsigned) width, (unsigned) height });
 }
@@ -90,7 +94,8 @@ void Painter::PutText(const Font &font, const wchar_t *text, float x, float y) c
 		(int) wcslen(text),
 		font.m_TextFormat,
 		D2D1::RectF(x, y, 1e+6, 1e+6),
-		m_Brush
+		m_Brush,
+		D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT
 	);
 }
 

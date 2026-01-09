@@ -39,23 +39,20 @@ struct KeyInputEvent {
 };
 
 struct MouseMoveEvent {
-	MouseMoveEvent(int x, int y) : X(x), Y(y) { }
+	MouseMoveEvent(float x, float y) : X(x), Y(y) { }
 
-	int X, Y;
+	float X, Y;
 };
 
 struct WindowSettings {
 	friend Window;
 
-	WindowSettings &Position(int x, int y);
 	WindowSettings &Size(int width, int height);
-	WindowSettings &MinSize(int width, int height);
 	WindowSettings &Background(int color);
 
 private:
-	int m_X = CW_USEDEFAULT, m_Y = CW_USEDEFAULT;
-	int m_Width = CW_USEDEFAULT, m_Height = CW_USEDEFAULT;
-	int m_MinWidth = 0, m_MinHeight = 0;
+	int m_X = -1, m_Y = -1;
+	int m_Width = -1, m_Height = -1;
 	int m_Background = 0;
 };
 
@@ -89,10 +86,9 @@ struct Window {
 
 private:
 	static LPCWSTR WndClass();
-	static LRESULT WndProc(HWND h, UINT m, WPARAM w, LPARAM l);
+	static LRESULT WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp);
 
-	WindowSettings m_Settings;
-	HWND m_Hwnd = 0;
-
+	int m_Background;
+	HWND m_Handle = 0;
 	Painter *m_Painter = 0;
 };
