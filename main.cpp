@@ -1,75 +1,75 @@
 ﻿#include "Window.hpp"
+#include "TextEditorWidget.hpp"
 
 struct TextEditorWindow : Window {
 	TextEditorWindow(WindowSettings windowSettings) : Window(
 		L"Text Editor",
 		windowSettings
-			.Background(0x181818)
-			.Size(640, 480)
+		.Background(0x181818)
+		.Size(800, 600)
 	) {
-		m_Font = new Font(L"Segoe UI", 18, 600);
+		m_Font = new Font(L"Segoe UI", 18, 400);
 
-		//m_Root = &Make<Column>()
-		//	.Add(
-		//		Make<SizeBox>(
-		//			Make<Row>()
-		//				.Add(
-		//					Make<Button>(L"Files")
-		//				).Add(
-		//					Make<Button>(L"Edit")
-		//				).Gap(4)
-		//		).Height(48)
-		//	).Add(
-		//		Make<Expand>(
-		//			Make<TextBox>()
-		//		)
-		//	);
+		m_Editor = new TextEditorWidget(m_Font);
+		// simple layout: editor covers whole client area minus menubar (drawn in paint)
+		m_Editor->Position(0, 24);
+		m_Editor->m_Constraint.Min(100, 100);
+		m_Editor->m_Constraint.Width = 800;
+		m_Editor->m_Constraint.Height = 576;
+
+		// try load sample file if exists
+		m_Editor->LoadFromFile(L"sample.txt");
 	}
 
 	~TextEditorWindow() {
+		delete m_Editor;
 		delete m_Font;
 	}
 
 	void Handle(const ResizeEvent &e) override {
 		m_Width = (float) e.Width;
 		m_Height = (float) e.Height;
+
+		// resize editor to fit below menubar
+		int menubarH = 24;
+		m_Editor->Position(0, menubarH);
+		m_Editor->m_Constraint.Width = e.Width;
+		m_Editor->m_Constraint.Height = e.Height - menubarH;
+		m_Editor->Resize(m_Editor->m_Constraint);
 	}
 
 	void Handle(const PaintEvent &e) override {
-		e.Painter.SetColor(0x202020);
-		e.Painter.FillRect(10, 34, m_Width - 20, m_Height - 44, 8);
-
-		wchar_t text[] = L"You pressed ' ' 🐒";
-		text[13] = m_Char;
+		// menubar
+		e.Painter.SetColor(0x2B2B2B);
+		e.Painter.FillRect(0, 0, m_Width, 24);
 
 		e.Painter.SetColor(0xE0E0E0);
-		e.Painter.PutText(*m_Font, text, 20, 44);
+		e.Painter.PutText(*m_Font, L"File", 8, 4);
+		e.Painter.PutText(*m_Font, L"Edit", 64, 4);
 
-		e.Painter.SetColor(0xFF9900);
-		e.Painter.FillRect(m_X - 10, m_Y - 10, 10, 10);
+		// editor paint
+		m_Editor->Paint(e.Painter);
 	}
 
 	void Handle(const KeyInputEvent &e) override {
-		if(!e.IsDown) return;
-		if(e.Char < 0x20 || e.Char >= 0x80)
-			return;
-
-		m_Char = e.Char;
+		m_Editor->OnKey(e);
 		Redraw();
 	}
 
 	void Handle(const MouseMoveEvent &e) override {
-		m_X = (float) e.X;
-		m_Y = (float) e.Y;
+		m_Editor->OnMouseMove(e);
+	}
+
+	void Handle(const MouseClickEvent &e) override {
+		m_Editor->OnMouseClick(e.X, e.Y);
 		Redraw();
 	}
 
 private:
 	float m_Width = 0, m_Height = 0;
-	float m_X = 0, m_Y = 0;
-	wchar_t m_Char = ' ';
 
 	Font *m_Font = 0;
+	TextEditorWidget *m_Editor = 0;
 };
 
 int main() {

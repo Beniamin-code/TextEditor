@@ -55,7 +55,7 @@ private:
 	bool IsMatchAt(const Piece *p, size_t OffsetInNode, const std::string &Query) const;
 public:
 
-	PieceTable(const std::string& InitialText);
+	PieceTable(const std::string &InitialText);
 	~PieceTable();
 
 	std::string GetTextRange(size_t Start, size_t Length) const;
@@ -64,8 +64,12 @@ public:
 	std::size_t GetLineCount() const;
 	std::size_t GetCharCount() const;
 
+	// Helpers for mapping indices/lines (added for editor)
+	size_t GetLineStartIndex(size_t LineNumber) const;
+	size_t GetLineNumberAtIndex(size_t Index) const;
 
-	void Insert(size_t Index, const std::string& TextToInsert);
+
+	void Insert(size_t Index, const std::string &TextToInsert);
 	void Delete(size_t Index, size_t LengthToDelete);
 
 	size_t Find(const std::string &Query, size_t StartIndex = 0) const;

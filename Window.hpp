@@ -44,6 +44,11 @@ struct MouseMoveEvent {
 	float X, Y;
 };
 
+struct MouseClickEvent {
+	MouseClickEvent(int x, int y) : X(x), Y(y) { }
+	int X, Y;
+};
+
 struct WindowSettings {
 	friend Window;
 
@@ -74,6 +79,7 @@ struct Window {
 	virtual void Handle(const ResizeEvent &e) { }
 	virtual void Handle(const KeyInputEvent &e) { }
 	virtual void Handle(const MouseMoveEvent &e) { }
+	virtual void Handle(const MouseClickEvent &e) { }
 	virtual void Handle(CloseEvent &e) { }
 
 	Window(const Window &) = delete;

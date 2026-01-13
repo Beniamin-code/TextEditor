@@ -99,6 +99,38 @@ void Painter::PutText(const Font &font, const wchar_t *text, float x, float y) c
 	);
 }
 
+void Painter::MeasureText(const Font &font, const wchar_t *text, float &outWidth, float &outHeight) const {
+	if(!text || !*text) { outWidth = 0; outHeight = 0; return; }
+
+	IDWriteTextLayout *layout = nullptr;
+	HRESULT hr = DWriteFactory()->CreateTextLayout(
+		text,
+		(UINT32) wcslen(text),
+		font.m_TextFormat,
+		10000.0f,
+		10000.0f,
+		&layout
+	);
+
+	if(hr != S_OK || !layout) {
+		outWidth = 0;
+		outHeight = 0;
+		return;
+	}
+
+	DWRITE_TEXT_METRICS metrics;
+	hr = layout->GetMetrics(&metrics);
+	if(hr == S_OK) {
+		outWidth = metrics.widthIncludingTrailingWhitespace;
+		outHeight = metrics.height;
+	} else {
+		outWidth = 0;
+		outHeight = 0;
+	}
+
+	layout->Release();
+}
+
 Font::Font(const wchar_t *name, int size, int weight, bool italic) {
 	DWRITE_FONT_STYLE style = italic ? DWRITE_FONT_STYLE_ITALIC : DWRITE_FONT_STYLE_NORMAL;
 

@@ -2,7 +2,7 @@
 #include "Clipboard.hpp"
 #include <algorithm>
 
-PieceTable::PieceTable(const std::string& InitialText) {
+PieceTable::PieceTable(const std::string &InitialText) {
 	m_OriginalBuffer = InitialText;
 	m_AddBuffer = "";
 	m_IsUndoRedo = false;
@@ -12,7 +12,7 @@ PieceTable::PieceTable(const std::string& InitialText) {
 	m_Pieces.Length = InitialText.length();
 
 	if(m_Pieces.First == NULL) {
-		Piece* PieceToAdd = new Piece();
+		Piece *PieceToAdd = new Piece();
 
 		PieceToAdd->Source = BufferType::Original;
 		PieceToAdd->Start = 0;
@@ -36,7 +36,7 @@ PieceTable::~PieceTable() {
 	ClearList();
 }
 
-std::string PieceTable::GetText() const{
+std::string PieceTable::GetText() const {
 	std::string FullText = "";
 	Piece *p = m_Pieces.First;
 	while(p != NULL) {
@@ -47,7 +47,7 @@ std::string PieceTable::GetText() const{
 
 		p = p->Next;
 	}
-	
+
 
 	return FullText;
 }
@@ -60,14 +60,14 @@ std::string PieceTable::GetTextRange(size_t Start, size_t Length) const {
 	}
 
 	std::string Result;
-	Result.reserve(Length); 
+	Result.reserve(Length);
 
 	Piece *Current = m_Pieces.First;
 	size_t CurrentGlobalIndex = 0;
 
 	while(Current != nullptr) {
 		if(Start < CurrentGlobalIndex + Current->Length) {
-			break; 
+			break;
 		}
 		CurrentGlobalIndex += Current->Length;
 		Current = Current->Next;
@@ -104,8 +104,7 @@ std::string PieceTable::GetLine(size_t LineNumber) const {
 	if(LineNumber + 1 < m_LineOffsets.size()) {
 		size_t NextLineStart = m_LineOffsets[LineNumber + 1];
 		Length = (NextLineStart - 1) - StartIndex;
-	}
-	else {
+	} else {
 		Length = m_Pieces.Length - StartIndex;
 	}
 
@@ -154,11 +153,9 @@ void PieceTable::Undo() {
 
 	if(LastAction.Type == ActionType::Insert) {
 		Delete(LastAction.Index, LastAction.Text.length());
-	} 
-	else if(LastAction.Type == ActionType::Delete) {
+	} else if(LastAction.Type == ActionType::Delete) {
 		Insert(LastAction.Index, LastAction.Text);
-	}
-	else if(LastAction.Type == ActionType::Replace) {
+	} else if(LastAction.Type == ActionType::Replace) {
 		Delete(LastAction.Index, LastAction.Text.length());
 		Insert(LastAction.Index, LastAction.ExtraText);
 	}
@@ -177,11 +174,9 @@ void PieceTable::Redo() {
 
 	if(NextAction.Type == ActionType::Insert) {
 		Insert(NextAction.Index, NextAction.Text);
-	}
-	else if(NextAction.Type == ActionType::Delete) {
+	} else if(NextAction.Type == ActionType::Delete) {
 		Delete(NextAction.Index, NextAction.Text.length());
-	}
-	else if(NextAction.Type == ActionType::Replace) {
+	} else if(NextAction.Type == ActionType::Replace) {
 		Delete(NextAction.Index, NextAction.Text.length());
 		Insert(NextAction.Index, NextAction.Text);
 	}
@@ -220,7 +215,7 @@ void PieceTable::Insert(size_t SelectedIndex, const std::string &TextToInsert) {
 	if(m_Pieces.First == nullptr) {
 		m_Pieces.First = NewPiece;
 		m_Pieces.Last = NewPiece;
-		m_Pieces.Length = TextToInsert.length(); 
+		m_Pieces.Length = TextToInsert.length();
 		return;
 	}
 
@@ -228,7 +223,7 @@ void PieceTable::Insert(size_t SelectedIndex, const std::string &TextToInsert) {
 	size_t CurrentGlobalIndex = 0;
 
 	while(Target != nullptr) {
-		if(SelectedIndex <= CurrentGlobalIndex + Target->Length) break; 
+		if(SelectedIndex <= CurrentGlobalIndex + Target->Length) break;
 		CurrentGlobalIndex += Target->Length;
 		Target = Target->Next;
 	}
@@ -249,27 +244,27 @@ void PieceTable::Insert(size_t SelectedIndex, const std::string &TextToInsert) {
 		NewPiece->Next = Target;
 
 		if(Target->Prev) Target->Prev->Next = NewPiece;
-		else m_Pieces.First = NewPiece; 
+		else m_Pieces.First = NewPiece;
 		Target->Prev = NewPiece;
 	}
-	
+
 	else if(LocalOffset == Target->Length) {
 		NewPiece->Next = Target->Next;
 		NewPiece->Prev = Target;
 
-		if(Target->Next)Target->Next->Prev = NewPiece; 
-		else m_Pieces.Last = NewPiece; 
+		if(Target->Next)Target->Next->Prev = NewPiece;
+		else m_Pieces.Last = NewPiece;
 		Target->Next = NewPiece;
 	}
-	
+
 	else {
-		
+
 		Piece *RightPiece = new Piece();
 		RightPiece->Source = Target->Source;
-		RightPiece->Start = Target->Start + LocalOffset; 
-		RightPiece->Length = Target->Length - LocalOffset; 
+		RightPiece->Start = Target->Start + LocalOffset;
+		RightPiece->Length = Target->Length - LocalOffset;
 
-		Target->Length = LocalOffset; 
+		Target->Length = LocalOffset;
 
 		Piece *OldNext = Target->Next;
 
@@ -313,7 +308,7 @@ void PieceTable::Delete(size_t StartIndex, size_t LengthToDelete) {
 		Current = Current->Next;
 	}
 
-	if(!Current) return; 
+	if(!Current) return;
 
 	size_t OffsetInNode = StartIndex - CurrentGlobalIndex;
 	size_t RemainingToDelete = LengthToDelete;
@@ -322,7 +317,7 @@ void PieceTable::Delete(size_t StartIndex, size_t LengthToDelete) {
 		size_t AvailableInThisNode = Current->Length - OffsetInNode;
 
 		if(RemainingToDelete < AvailableInThisNode) {
-			
+
 			Piece *RightPiece = new Piece();
 			RightPiece->Source = Current->Source;
 			RightPiece->Start = Current->Start + OffsetInNode + RemainingToDelete;
@@ -340,11 +335,11 @@ void PieceTable::Delete(size_t StartIndex, size_t LengthToDelete) {
 		}
 
 		else {
-			size_t deleteFromThis = AvailableInThisNode; 
+			size_t deleteFromThis = AvailableInThisNode;
 
 			if(OffsetInNode == 0 && deleteFromThis == Current->Length) {
 				Piece *ToDelete = Current;
-				Current = Current->Next; 
+				Current = Current->Next;
 
 				if(ToDelete->Prev) ToDelete->Prev->Next = ToDelete->Next;
 				else m_Pieces.First = ToDelete->Next;
@@ -352,17 +347,17 @@ void PieceTable::Delete(size_t StartIndex, size_t LengthToDelete) {
 				if(ToDelete->Next) ToDelete->Next->Prev = ToDelete->Prev;
 				else m_Pieces.Last = ToDelete->Prev;
 
-				delete ToDelete; 
+				delete ToDelete;
 			}
 
 			else if(OffsetInNode > 0) {
 				Current->Length = OffsetInNode;
-				Current = Current->Next;     
+				Current = Current->Next;
 			}
-			
+
 			else if(OffsetInNode == 0) {
-				Current->Start += deleteFromThis; 
-				Current->Length -= deleteFromThis; 
+				Current->Start += deleteFromThis;
+				Current->Length -= deleteFromThis;
 				Current = Current->Next;
 			}
 
@@ -531,7 +526,7 @@ int PieceTable::ReplaceAll(const std::string &Query, const std::string &Replacem
 
 	return Count;
 }
- 
+
 void PieceTable::Copy(size_t Index, size_t Length) {
 	std::string TextToCopy = GetTextRange(Index, Length);
 
@@ -552,8 +547,22 @@ void PieceTable::Cut(size_t Index, size_t Length) {
 
 void PieceTable::Paste(size_t Index) {
 	std::string TextToPaste = Platform::GetClipboardText();
-	
+
 	if(!TextToPaste.empty()) {
 		Insert(Index, TextToPaste);
 	}
+}
+
+// --- Added helpers for editor integration -----------------------------------
+
+size_t PieceTable::GetLineStartIndex(size_t LineNumber) const {
+	if(LineNumber >= m_LineOffsets.size()) return m_Pieces.Length;
+	return m_LineOffsets[LineNumber];
+}
+
+size_t PieceTable::GetLineNumberAtIndex(size_t Index) const {
+	if(m_LineOffsets.empty()) return 0;
+	auto it = std::upper_bound(m_LineOffsets.begin(), m_LineOffsets.end(), Index);
+	if(it == m_LineOffsets.begin()) return 0;
+	return (size_t) (std::distance(m_LineOffsets.begin(), it) - 1);
 }

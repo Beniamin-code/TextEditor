@@ -23,9 +23,9 @@ Window::Window(const wchar_t *title, WindowSettings settings) {
 	);
 
 	COLORREF color =
-		((settings.m_Background & 0x00FF00)      ) |
+		((settings.m_Background & 0x00FF00)) |
 		((settings.m_Background & 0x0000FF) << 16) |
-		((settings.m_Background & 0xFF0000) >> 16) ;
+		((settings.m_Background & 0xFF0000) >> 16);
 
 	DwmSetWindowAttribute(m_Handle, DWMWA_CAPTION_COLOR, &color, sizeof(color));
 
@@ -34,7 +34,7 @@ Window::Window(const wchar_t *title, WindowSettings settings) {
 	{
 		RECT clientRect;
 		GetClientRect(m_Handle, &clientRect);
-		
+
 		int width = clientRect.right - clientRect.left;
 		int height = clientRect.bottom - clientRect.top;
 		PostMessageW(m_Handle, WM_SIZE, SIZE_RESTORED, MAKELPARAM(width, height));
@@ -72,7 +72,6 @@ LPCWSTR Window::WndClass() {
 		atom = RegisterClassExW(&wc);
 		if(!atom) throw L"Cannot create Window Class!";
 	}
-
 	return MAKEINTATOM(atom);
 }
 
@@ -83,7 +82,7 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 		SetWindowLongPtrW(hwnd, GWLP_USERDATA, (LONG_PTR) window);
 		return DefWindowProcW(hwnd, msg, wp, lp);
 	}
-	
+
 	Window *window = (Window *) GetWindowLongPtrW(hwnd, GWLP_USERDATA);
 	if(!window) return DefWindowProcW(hwnd, msg, wp, lp);
 
@@ -115,6 +114,14 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wp, LPARAM lp) {
 
 			window->Handle(MouseMoveEvent(x, y));
 
+			return 0;
+		}
+
+		case WM_LBUTTONDOWN:
+		{
+			int x = LOWORD(lp);
+			int y = HIWORD(lp);
+			window->Handle(MouseClickEvent(x, y));
 			return 0;
 		}
 

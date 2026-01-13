@@ -20,7 +20,7 @@ struct Widget {
 
 	void Position(int x, int y);
 
-protected:
+public:
 	unsigned m_X = 0, m_Y = 0;
 	unsigned m_Width = 0, m_Height = 0;
 	Constraint m_Constraint;
