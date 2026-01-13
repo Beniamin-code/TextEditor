@@ -33,7 +33,6 @@ struct Painter {
 
 	void PutText(const Font &font, const wchar_t *text, float x, float y) const;
 
-	// Measure text extents (width, height) for a given string and font.
 	void MeasureText(const Font &font, const wchar_t *text, float &outWidth, float &outHeight) const;
 
 private:

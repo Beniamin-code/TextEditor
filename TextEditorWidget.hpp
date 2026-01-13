@@ -13,12 +13,10 @@ struct TextEditorWidget : Widget {
 	void Resize(const Constraint &parentCon) override;
 	void Paint(const Painter &painter) override;
 
-	// Input handlers called by the window owning this widget
 	void OnKey(const KeyInputEvent &e);
 	void OnMouseMove(const MouseMoveEvent &e);
 	void OnMouseClick(int x, int y);
 
-	// File operations
 	bool LoadFromFile(const std::wstring &path);
 	bool SaveToFile(const std::wstring &path);
 

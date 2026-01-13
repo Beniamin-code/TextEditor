@@ -38,7 +38,7 @@ void Widget::Position(int x, int y) {
 }
 
 Container::~Container() {
-	// Delete nodes
+	// Nodes should be deleted
 }
 
 Container &Container::Gap(int gap) {

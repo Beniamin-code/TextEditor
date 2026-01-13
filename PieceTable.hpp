@@ -1,8 +1,8 @@
 #pragma once
+
 #include<vector>
 #include<string>
 #include<deque>
-#include<algorithm>
 
 enum class BufferType {
 	Original,
@@ -64,7 +64,6 @@ public:
 	std::size_t GetLineCount() const;
 	std::size_t GetCharCount() const;
 
-	// Helpers for mapping indices/lines (added for editor)
 	size_t GetLineStartIndex(size_t LineNumber) const;
 	size_t GetLineNumberAtIndex(size_t Index) const;
 

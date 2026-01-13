@@ -553,8 +553,6 @@ void PieceTable::Paste(size_t Index) {
 	}
 }
 
-// --- Added helpers for editor integration -----------------------------------
-
 size_t PieceTable::GetLineStartIndex(size_t LineNumber) const {
 	if(LineNumber >= m_LineOffsets.size()) return m_Pieces.Length;
 	return m_LineOffsets[LineNumber];
