@@ -15,7 +15,6 @@ struct TextEditorWindow : Window {
 		m_Editor->m_Constraint.Min(100, 100);
 		m_Editor->m_Constraint.Width = 800;
 		m_Editor->m_Constraint.Height = 576;
-		//m_Editor->LoadFromFile(L"sample.txt");
 	}
 
 	~TextEditorWindow() {

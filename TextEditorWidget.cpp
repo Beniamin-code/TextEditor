@@ -15,8 +15,44 @@ static void NormalizeSelection(size_t &a, size_t &b, size_t &outStart, size_t &o
 	if(a <= b) { outStart = a; outEnd = b; } else { outStart = b; outEnd = a; }
 }
 
-TextEditorWidget::TextEditorWidget(Font *font)
-	: m_Font(font) {
+static int OpenFileDialog(HWND hwnd, wchar_t *filename, int size) {
+	OPENFILENAME ofn;       // Common dialog box structure
+	wchar_t szFile[260];    // Buffer for file name
+
+	// Initialize OPENFILENAME
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hwnd;
+	ofn.lpstrFile = filename;
+	ofn.lpstrFile[0] = '\0';
+	ofn.nMaxFile = size;
+	ofn.lpstrFilter = L"All Files\0*.*\0Text Files\0*.TXT\0";
+	ofn.nFilterIndex = 1;
+	ofn.lpstrFileTitle = NULL;
+	ofn.nMaxFileTitle = 0;
+	ofn.lpstrInitialDir = NULL;
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+
+	return GetOpenFileNameW(&ofn);
+}
+
+static int SaveFileDialog(HWND hwnd, wchar_t *filename, int size) {
+	OPENFILENAME ofn;
+
+	ZeroMemory(&ofn, sizeof(ofn));
+	ofn.lStructSize = sizeof(ofn);
+	ofn.hwndOwner = hwnd;
+	ofn.lpstrFile = filename;
+	ofn.nMaxFile = size;
+	ofn.lpstrFilter = L"Text Files\0*.TXT\0All Files\0*.*\0";
+	ofn.nFilterIndex = 1;
+	ofn.lpstrDefExt = L"txt"; // Default extension if user doesn't type one
+	ofn.Flags = OFN_PATHMUSTEXIST | OFN_OVERWRITEPROMPT;
+
+	return GetSaveFileNameW(&ofn);
+}
+
+TextEditorWidget::TextEditorWidget(Font *font) : m_Font(font) {
 	m_Constraint.Min(100, 100);
 	m_Constraint.Max(-1, -1);
 	m_Constraint.Width = 400;
@@ -158,7 +194,7 @@ void TextEditorWidget::OnKey(const KeyInputEvent &e) {
 					size_t len = selE - selS;
 					m_Doc.Cut(selS, len);
 					m_Caret = selS;
-					m_SelectionStart = m_SelectionEnd = SIZE_MAX;
+					m_SelectionStart = m_SelectionEnd = selS;
 				}
 				return;
 			}
@@ -169,17 +205,27 @@ void TextEditorWidget::OnKey(const KeyInputEvent &e) {
 				if(selS != SIZE_MAX && selE > selS) {
 					m_Doc.Delete(selS, selE - selS);
 					m_Caret = selS;
-					m_SelectionStart = m_SelectionEnd = SIZE_MAX;
+					m_SelectionStart = m_SelectionEnd = selS;
 				}
-				m_Doc.Paste(m_Caret);
-				m_Caret = m_Doc.GetCharCount();
+				int size = m_Doc.Paste(m_Caret);
+				m_Caret += size;
 				return;
 			}
 			case 'Z': m_Doc.Undo(); return;
 			case 'Y': m_Doc.Redo(); return;
+
 			case 'S':
 			{
-				SaveToFile(L"saved.txt");
+				wchar_t filename[260];
+				if(!SaveFileDialog(0, filename, 260)) return;
+				SaveToFile(filename);
+				return;
+			}
+
+			case 'O': {
+				wchar_t filename[260] = L"untitled.txt";
+				if(!OpenFileDialog(0, filename, 260)) return;
+				LoadFromFile(filename);
 				return;
 			}
 		}
@@ -329,7 +375,8 @@ bool TextEditorWidget::LoadFromFile(const std::wstring &path) {
 	std::ifstream ifs(std::string(path.begin(), path.end()), std::ios::binary);
 	if(!ifs) return false;
 	std::string content((std::istreambuf_iterator<char>(ifs)), std::istreambuf_iterator<char>());
-	//m_Doc = PieceTable(content);
+	m_Doc.ClearList();
+	m_Doc.Insert(0, content);
 	m_Caret = 0;
 	m_FirstVisibleLine = 0;
 	return true;

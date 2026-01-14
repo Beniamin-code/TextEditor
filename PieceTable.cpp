@@ -545,12 +545,15 @@ void PieceTable::Cut(size_t Index, size_t Length) {
 	Delete(Index, Length);
 }
 
-void PieceTable::Paste(size_t Index) {
+int PieceTable::Paste(size_t Index) {
 	std::string TextToPaste = Platform::GetClipboardText();
+	int size = TextToPaste.size();
 
 	if(!TextToPaste.empty()) {
 		Insert(Index, TextToPaste);
 	}
+
+	return size;
 }
 
 size_t PieceTable::GetLineStartIndex(size_t LineNumber) const {

@@ -78,7 +78,7 @@ public:
 
 	void Copy(size_t Index, size_t Length);
 	void Cut(size_t Index, size_t Length);
-	void Paste(size_t Index);
+	int Paste(size_t Index);
 
 	void Undo();
 	void Redo();
