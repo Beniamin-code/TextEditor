@@ -72,9 +72,7 @@ public:
 	void Delete(size_t Index, size_t LengthToDelete);
 
 	size_t Find(const std::string &Query, size_t StartIndex = 0) const;
-	std::vector<size_t> FindAll(const std::string &Query) const;
 	bool Replace(const std::string &Query, const std::string &Replacement, size_t StartIndex = 0);
-	int ReplaceAll(const std::string &Query, const std::string &Replacement);
 
 	void Copy(size_t Index, size_t Length);
 	void Cut(size_t Index, size_t Length);
