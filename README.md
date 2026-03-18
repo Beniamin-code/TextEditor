@@ -11,7 +11,7 @@
 * **Configurable Undo/Redo:** A robust state management system with a customizable history limit for navigating edit history.
 * **Native Clipboard Integration:** Seamless interaction with the system clipboard (System-wide Copy/Paste) for a smooth workflow.
 * **File Persistence:** Reliable Save and Open functionalities for local file management.
-* **Precision Keyboard Selection**: Custom text selection logic using Shift + Arrow keys, designed for granular control over text blocks.
+* **Precision Keyboard Selection**: Custom text selection logic using `Shift + Arrow keys`, designed for granular control over text blocks.
 * **Keyboard-Driven Workflow**: Optimized for speed with support for industry-standard hotkeys (Ctrl+C, Ctrl+V, Ctrl+Z, etc.).
 
 ---
@@ -39,11 +39,13 @@ In this collaborative project, I was responsible for the architectural design of
 
 ## ⌨️ Controls
 
-* **Arrow Keys:** Move cursor
-* **Shift + Arrows:** Select text
-* **Ctrl + C / V / X:** Copy / Paste / Cut
-* **Ctrl + Z / Y:** Undo / Redo
-* **Ctrl + S / O:** Save / Open
+| Action | Shortcut |
+| :--- | :--- |
+| **Move Cursor** | `Arrow Keys` |
+| **Select Text** | `Shift + Arrows` |
+| **Copy / Paste / Cut** | `Ctrl + C / V / X` |
+| **Undo / Redo** | `Ctrl + Z / Y` |
+| **Save / Open** | `Ctrl + S / O` |
 
 ---
 
