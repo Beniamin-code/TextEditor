@@ -37,6 +37,16 @@ In this collaborative project, I was responsible for the architectural design of
 
 ---
 
+## ⌨️ Controls
+
+* **Arrow Keys:** Move cursor
+* **Shift + Arrows:** Select text
+* **Ctrl + C / V / X:** Copy / Paste / Cut
+* **Ctrl + Z / Y:** Undo / Redo
+* **Ctrl + S / O:** Save / Open
+
+---
+
 ## ⚙️ Installation & Usage
 
 ### Prerequisites
