@@ -1,4 +1,4 @@
-# High-Performance C++ Text Editor
+# Piece Table-based CLI Text Editor
 
 > A lightweight and efficient text editor core built in C++, optimized for handling large files through the **Piece Table** data structure.
 
