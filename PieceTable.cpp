@@ -463,26 +463,6 @@ size_t PieceTable::Find(const std::string &Query, size_t StartIndex) const {
 	return std::string::npos;
 }
 
-std::vector<size_t> PieceTable::FindAll(const std::string &Query) const {
-	std::vector<size_t> Positions;
-
-	if(Query.empty()) return Positions;
-
-	size_t CurrentIndex = 0;
-
-	while(true) {
-		size_t FoundAt = Find(Query, CurrentIndex);
-
-		if(FoundAt == std::string::npos) break;
-
-		Positions.push_back(FoundAt);
-
-		CurrentIndex = FoundAt + 1;
-	}
-
-	return Positions;
-}
-
 bool PieceTable::Replace(const std::string &Query, const std::string &Replacement, size_t StartIndex) {
 	size_t FoundIndex = Find(Query, StartIndex);
 
@@ -508,23 +488,6 @@ bool PieceTable::Replace(const std::string &Query, const std::string &Replacemen
 	m_IsUndoRedo = WasUndo;
 
 	return true;
-}
-
-int PieceTable::ReplaceAll(const std::string &Query, const std::string &Replacement) {
-	int Count = 0;
-	size_t CurrentIndex = 0;
-
-	while(true) {
-		size_t FoundAt = Find(Query, CurrentIndex);
-		if(FoundAt == std::string::npos) break;
-
-		Replace(Query, Replacement, CurrentIndex);
-		Count++;
-
-		CurrentIndex = FoundAt + Replacement.length();
-	}
-
-	return Count;
 }
 
 void PieceTable::Copy(size_t Index, size_t Length) {
